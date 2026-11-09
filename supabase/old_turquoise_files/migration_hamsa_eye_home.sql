@@ -1,0 +1,23 @@
+-- =========================================================
+-- HAMSA & EYE — homepage selection — run this once in Supabase SQL Editor
+-- (This file is NOT part of the website code — it only sets up
+-- the database. Run it, then you don't need to touch it again.)
+--
+-- Why this exists: is_hamsa_eye marks a product as part of the Hamsa &
+-- Eye collection overall (it now has its own page, /hamsa-eye, which
+-- shows every product with is_hamsa_eye = true — no limit). But you
+-- don't want all of those crowding the homepage too — only 6 hand-picked
+-- ones there.
+--
+-- This adds a SECOND, independent checkbox: is_hamsa_eye_home. Only
+-- products with BOTH is_hamsa_eye = true AND is_hamsa_eye_home = true
+-- show up in the homepage's "Hamsa & Eye Collection" section (capped at
+-- 6). Every is_hamsa_eye = true product still shows on the full /hamsa-eye
+-- page regardless of this second checkbox.
+--
+-- How to use it in Table Editor > products:
+--   - is_hamsa_eye        = true  -> shows on the full /hamsa-eye page
+--   - is_hamsa_eye_home   = true  -> ALSO shows on the homepage (pick 6)
+-- =========================================================
+
+alter table products add column if not exists is_hamsa_eye_home boolean not null default false;

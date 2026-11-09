@@ -1,0 +1,21 @@
+-- =========================================================
+-- SHOP THE LOOK — run this once in Supabase SQL Editor
+-- (This file is NOT part of the website code — it only sets up
+-- the database. Run it, then you don't need to touch it again.)
+--
+-- What this does: adds an is_shop_the_look checkbox to your existing
+-- products table. It works exactly like the is_featured checkbox
+-- already does for the "Featured Items" section:
+--
+--   - Set is_shop_the_look = true (and is_active = true) on any
+--     product and it will automatically show up in the "Shop The
+--     Look" section on the homepage (between the hero banner and
+--     Featured Items).
+--   - Set it back to false (or set is_active = false) to remove it
+--     from that section without deleting the product.
+--   - You can do this from Table Editor > products > tick the
+--     is_shop_the_look checkbox for a row — no SQL needed after
+--     this one-time setup.
+-- =========================================================
+
+alter table products add column if not exists is_shop_the_look boolean not null default false;

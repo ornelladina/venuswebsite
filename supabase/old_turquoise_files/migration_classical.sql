@@ -1,0 +1,21 @@
+-- =========================================================
+-- CLASSICAL THEME — run this once in the Supabase SQL Editor
+-- (This file is NOT part of the website code — it only sets up
+-- the database. Run it, then you don't need to touch it again.)
+--
+-- Why this exists: the header's Shop > Themes dropdown now has a second
+-- entry, "Classical", alongside "Hamsa & Eye". It works exactly the same
+-- way Hamsa & Eye already does: a boolean column on `products` that you
+-- flip per-product, and a dedicated page (/classical) that shows every
+-- product with that column set to true.
+--
+-- How to use it in Table Editor > products:
+--   - Open a product row, set is_classical = true  -> it now shows on
+--     the /classical page (and the "Classical" link in the Themes
+--     dropdown becomes a real, populated page for it).
+--   - Set it back to false to remove that product from the page.
+-- No code changes or redeploys needed to add/remove products from this
+-- page — it's all driven by this one column.
+-- =========================================================
+
+alter table products add column if not exists is_classical boolean not null default false;
