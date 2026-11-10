@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/components/CartContext';
+import { useCartOffers } from '@/components/useCartOffers';
 import { getDeliveryFee, amountToFreeDelivery, FREE_DELIVERY_THRESHOLD } from '@/lib/delivery';
 import { getCustomerClient } from '@/lib/customerClient';
 import { COUNTRY_CODES, DEFAULT_COUNTRY_ISO2, findCountry } from '@/lib/countryCodes';
@@ -38,7 +39,11 @@ const LEBANON_CITIES: { group: string; cities: string[] }[] = [
 ];
 
 export default function CheckoutPage() {
-  const { items, subtotal, clearCart } = useCart();
+  const { items, subtotal: rawSubtotal, clearCart } = useCart();
+  // Bundle offers (see lib/offers.ts). `subtotal` from here on is the
+  // price AFTER offers, so delivery, the total and the saved order all
+  // use the discounted number.
+  const { applied, ready: offersReady, subtotalAfterOffers: subtotal } = useCartOffers();
   const router = useRouter();
 
   const [form, setForm] = useState({
@@ -127,6 +132,11 @@ export default function CheckoutPage() {
       return;
     }
 
+    if (!offersReady) {
+      setError('One moment - we are applying your offers. Please press Confirm Order again.');
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
     setStaleCart(false);
@@ -151,7 +161,19 @@ export default function CheckoutPage() {
           unit_price: item.price,
           quantity: item.quantity,
           line_total: item.price * item.quantity,
-        })),
+        })).concat(
+          // One negative line per offer, so the saved order (admin, emails,
+          // WhatsApp message) shows the discount and its totals add up.
+          applied.map((a) => ({
+            product_id: null as unknown as string,
+            variation_id: null,
+            product_name: `Offer: ${a.name}${a.groups > 1 ? ` x ${a.groups}` : ''}`,
+            variation_label: null,
+            unit_price: -a.discount,
+            quantity: 1,
+            line_total: -a.discount,
+          }))
+        ),
       });
 
       if (rpcError || !orderNumber) throw rpcError ?? new Error('Could not create order');
@@ -265,6 +287,12 @@ export default function CheckoutPage() {
           </div>
 
           <div data-summary-totals>
+            {applied.map((a) => (
+              <div key={a.offer.id} data-summary-row data-offer-row>
+                <span>Offer: {a.name}{a.groups > 1 ? ` × ${a.groups}` : ''}</span>
+                <span>-${formatPrice(a.discount)}</span>
+              </div>
+            ))}
             <div data-summary-row>
               <span>Delivery Fee</span>
               <span>{deliveryFee === 0 ? 'Free' : `$${formatPrice(deliveryFee)}`}</span>

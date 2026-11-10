@@ -3,11 +3,16 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/components/CartContext';
+import { useCartOffers } from '@/components/useCartOffers';
 import { formatPrice } from '@/lib/formatPrice';
 import { amountToFreeDelivery, qualifiesForFreeDelivery, FREE_DELIVERY_THRESHOLD } from '@/lib/delivery';
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, subtotal } = useCart();
+  const { items, removeItem, updateQuantity, subtotal: rawSubtotal } = useCart();
+  // Bundle offers (3 bracelets for $25, 3 rings for $18 - see lib/offers.ts).
+  // `subtotal` below is the price AFTER those offers, so the free-delivery
+  // message uses what the customer will actually pay for items.
+  const { applied, hints, discount, subtotalAfterOffers: subtotal } = useCartOffers();
 
   if (items.length === 0) {
     return (
@@ -79,10 +84,27 @@ export default function CartPage() {
 
         <div data-cart-summary>
           <h2>Order Summary</h2>
+          {applied.length > 0 && (
+            <div data-summary-row>
+              <span>Items</span>
+              <span>${formatPrice(rawSubtotal)}</span>
+            </div>
+          )}
+          {applied.map((a) => (
+            <div key={a.offer.id} data-summary-row data-offer-row>
+              <span>Offer: {a.name}{a.groups > 1 ? ` × ${a.groups}` : ''}</span>
+              <span>-${formatPrice(a.discount)}</span>
+            </div>
+          ))}
           <div data-summary-row>
             <span>Subtotal</span>
             <span>${formatPrice(subtotal)}</span>
           </div>
+          {hints.map((h) => (
+            <p key={h.offer.id} data-field-hint data-offer-hint>
+              Add {h.needed} more {h.needed === 1 ? h.offer.label.replace(/s$/, '') : h.offer.label} to get {h.offer.size} {h.offer.label} for ${h.offer.bundlePrice}.
+            </p>
+          ))}
           <div data-summary-row>
             <span>Delivery Fee</span>
             <span>{qualifiesForFreeDelivery(subtotal) ? 'Free' : 'Calculated at checkout'}</span>

@@ -9297,3 +9297,16 @@ a[data-summary-item-name] {
     --logo-ink: #F8EFE0;
     --logo-tan: #F8EFE0;
 }
+
+/* ---------- Bundle offers (3 bracelets for $25 / 3 rings for $18) ----------
+   The discount line in the cart and checkout summaries, and the small
+   "add 1 more to get the offer" nudge under the subtotal. */
+[data-summary-row][data-offer-row] {
+    color: var(--tq-turquoise);
+    font-weight: 500;
+}
+
+[data-offer-hint] {
+    color: var(--tq-brown);
+    font-weight: 500;
+}
