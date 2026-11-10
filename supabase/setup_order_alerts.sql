@@ -5,8 +5,8 @@
 -- without needing that screen to show up.
 --
 -- BEFORE RUNNING: replace the two placeholders below —
---   1. venusbijoux.vercel.app -> your real Vercel site address
---   2. 22quSd3vRaS20vThD85Osphbt36qzb -> the exact WEBHOOK_SECRET
+--   1. YOUR-DOMAIN-HERE -> your real Vercel site address
+--   2. YOUR-WEBHOOK-SECRET-HERE -> the exact WEBHOOK_SECRET
 --      value you typed into Vercel's environment variables
 -- =========================================================
 
