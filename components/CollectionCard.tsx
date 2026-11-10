@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Collection } from '@/types';
@@ -24,6 +25,7 @@ function formatPriceRange(collection: Collection): string | null {
 export default function CollectionCard({ collection }: { collection: Collection }) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const priceRange = formatPriceRange(collection);
+  const router = useRouter();
 
   return (
     <div className="product-card-frame" data-reveal>
@@ -61,6 +63,33 @@ export default function CollectionCard({ collection }: { collection: Collection 
         <span data-collection-cta>
           See items <span data-cta-arrow aria-hidden="true">→</span>
         </span>
+
+        {/* Same "+ ADD" button regular product cards have, so a Shop The
+            Look card reads as part of the same family when they sit side
+            by side. Pressing it opens the look's page (like a product
+            with variations opens its product page). Reuses the exact
+            same classes as ProductCard's button, so size, position and
+            mobile icon-only behavior all match automatically. It sits
+            above the overlay link (z-index 2 vs 1). */}
+        <button
+          type="button"
+          aria-label="Shop the look"
+          className="atc-button atc-compact"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            router.push(`/collection/${collection.slug}`);
+          }}
+        >
+          <span className="atc-icon-plus" aria-hidden="true">
+            <span className="icon-svg icon-addtocart" aria-hidden="true" />
+            <span className="icon-svg icon-check" aria-hidden="true" />
+          </span>
+          <span className="btn-label atc-full-label">SHOP THE LOOK</span>
+          <span className="btn-label atc-short-label" aria-hidden="true">
+            ADD
+          </span>
+        </button>
 
         <button
           type="button"
