@@ -18,7 +18,10 @@ import { formatPrice } from '@/lib/formatPrice';
 function formatPriceRange(collection: Collection): string | null {
   const { price_min, price_max } = collection;
   if (price_min == null || price_max == null) return null;
-  if (price_min === price_max) return `$${formatPrice(price_min)}`;
+  // Compare the prices AS SHOWN (whole dollars), not the raw numbers: a
+  // collection with a $6.60 piece and a $7.00 piece both display as $7, and
+  // used to read "From $7 to $7". Now it collapses to a single "$7".
+  if (formatPrice(price_min) === formatPrice(price_max)) return `$${formatPrice(price_min)}`;
   return `From $${formatPrice(price_min)} to $${formatPrice(price_max)}`;
 }
 
