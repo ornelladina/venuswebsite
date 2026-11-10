@@ -18,8 +18,13 @@ import { formatPrice } from '@/lib/formatPrice';
 function formatPriceRange(collection: Collection): string | null {
   const { price_min, price_max } = collection;
   if (price_min == null || price_max == null) return null;
-  if (price_min === price_max) return `$${formatPrice(price_min)}`;
-  return `From $${formatPrice(price_min)} to $${formatPrice(price_max)}`;
+  // Compare the prices as they DISPLAY (whole dollars), not the raw numbers:
+  // e.g. $6.50 and $7.40 both show as $7, so they must collapse to one price
+  // instead of reading "From $7 to $7".
+  const lo = formatPrice(price_min);
+  const hi = formatPrice(price_max);
+  if (lo === hi) return `$${lo}`;
+  return `From $${lo} to $${hi}`;
 }
 
 export default function CollectionCard({ collection }: { collection: Collection }) {

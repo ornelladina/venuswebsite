@@ -12,7 +12,7 @@ const MESSAGES: { text: string; href?: string }[] = [
   { text: 'Free delivery on orders $75+', href: '/shop' },
   { text: 'Cash on delivery across Lebanon' },
   { text: 'Hypoallergenic gold-plated jewelry' },
-  { text: 'Shop the new arrivals', href: '/new' },
+  { text: '3 bracelets for $25 · 3 rings for $18', href: '/shop' },
 ];
 
 export default function AnnouncementBar() {
